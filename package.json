@@ -1,0 +1,23 @@
+{
+  "name": "scraping",
+  "version": "1.0.0",
+  "description": "scraping website",
+  "main": "index.js",
+  "scripts": {
+    "test": "npm run test"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+ssh://git@github.com/vuongvu1/football-hightlight.git"
+  },
+  "author": "Vuong Vu",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/vuongvu1/football-hightlight/issues"
+  },
+  "homepage": "https://github.com/vuongvu1/football-hightlight#readme",
+  "dependencies": {
+    "cheerio": "^1.0.0-rc.2",
+    "puppeteer": "^1.11.0"
+  }
+}
