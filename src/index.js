@@ -1,16 +1,31 @@
 const puppeteer = require('puppeteer');
 const cheerio = require('cheerio');
+const { autoScroll } = require('./utils');
 
 const PUPPETEER_LAUNCH_OPTIONS = {
-  args: ["--lang=en-US", "--no-sandbox", "--disable-setuid-sandbox"]
+  args: ["--lang=en-US", "--no-sandbox", "--disable-setuid-sandbox"],
+  headless: false,
+  // slowMo: 500 
 };
-const PUPPETEER_PAGE_VIEWPORT = { width: 1280, height: 2000 };
+const PUPPETEER_PAGE_VIEWPORT = { width: 1366, height: 768 };
+const LOAD_MORE_TIME = 5;
 
 const getPageContent = async (pageUrl) => {
   const browser = await puppeteer.launch(PUPPETEER_LAUNCH_OPTIONS);
   const page = await browser.newPage();
   await page.setViewport(PUPPETEER_PAGE_VIEWPORT);
   await page.goto(pageUrl);
+
+  await autoScroll(page);
+  console.log('load page 1 completed');
+
+  for (let i = 1; i < LOAD_MORE_TIME; i = i + 1) {
+    await page.waitForSelector('.td-load-more-wrap .td_ajax_load_more ');
+    await page.click('.td-load-more-wrap .td_ajax_load_more ');
+    await autoScroll(page);
+    console.log(`load page ${i + 1} completed`);
+  }
+
   const pageContent = await page.content();
   await browser.close();
   return pageContent;
@@ -39,7 +54,7 @@ const main = async () => {
   const targetUrl = 'https://highlightsfootball.com';
   const targetContent = await getPageContent(targetUrl);
   const matches = await extractPageContent(targetContent);
-  console.log({ matches });
+  console.log({ total: matches.length });
 }
 
 main();

@@ -4,6 +4,7 @@
   "description": "scraping website",
   "main": "index.js",
   "scripts": {
+    "babel": "babel --presets es2015 src/ -o build/main.bundle.js",
     "start": "node src/"
   },
   "repository": {
@@ -18,7 +19,12 @@
   "homepage": "https://github.com/vuongvu1/football-hightlight#readme",
   "dependencies": {
     "cheerio": "^1.0.0-rc.2",
-    "eslint": "^5.9.0",
+    "eslint": "^5.10.0",
     "puppeteer": "^1.11.0"
+  },
+  "devDependencies": {
+    "babel-cli": "^6.26.0",
+    "babel-core": "^6.26.3",
+    "babel-preset-es2015": "^6.24.1"
   }
 }
