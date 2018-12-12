@@ -12,6 +12,8 @@ const NUMBER_OF_PAGES = 1;
 
 const getPageContent = async (pageUrl, page) => {
   for (let i = 1; i <= NUMBER_OF_PAGES; i = i + 1) {
+    console.log(`========== loading page ${i}  ==========`);
+
     if (i === 1) {
       await page.goto(pageUrl, { waitUntil: 'networkidle2' });
     } else {
@@ -19,7 +21,7 @@ const getPageContent = async (pageUrl, page) => {
       await page.click('.td-load-more-wrap .td_ajax_load_more ');
     }
     await autoScroll(page);
-    console.log(`load page ${i} completed`);
+    console.log(`========== loaded page ${i}  ==========`);
   }
 
   const pageContent = await page.content();
@@ -27,14 +29,14 @@ const getPageContent = async (pageUrl, page) => {
 };
 
 const extractPageContent = async (content) => {
-  const wrapperContainer = cheerio.load(content);
-  const wrapper = wrapperContainer('.td_block_wrap .td_block_inner .td_module_wrap .td-module-meta-info');
+  const $ = cheerio.load(content);
+  const wrapper = $('.td_block_wrap .td_block_inner .td_module_wrap .td-module-meta-info');
   const matchesData = [];
 
   wrapper.each((index, container) => {
-    const element = cheerio.load(container);
-    const elementTitle = element('.td-module-title a');
-    const timeTag = element('time');
+    const $$ = cheerio.load(container);
+    const elementTitle = $$('.td-module-title a');
+    const timeTag = $$('time');
     matchesData.push({
       index,
       title: elementTitle.attr("title") || elementTitle.text(),
@@ -45,52 +47,83 @@ const extractPageContent = async (content) => {
   return matchesData
 };
 
-const extractPageDetail = async (content) => {
-  const wrapperContainer = cheerio.load(content);
-  const wrapper = wrapperContainer('#acp_wrapper');
+const extractAllPosibleVideos = async (page, firstUrl) => {
+  await page.goto(firstUrl, { waitUntil: 'networkidle2' });
+  const content = await page.content();
+
+  const $ = cheerio.load(content);
   const matchData = [];
+  const elementTitle = $('#acp_wrapper #acp_paging_menu li');
 
-  console.log({ wrapper: wrapper.html() });
-
-  // wrapper.each((index, container) => {
-    const element = cheerio.load(wrapper);
-    const elementTitle = element('.acp_title');
-
-    elementTitle.each((index, container) => {
-      const element = cheerio.load(container);
-      if (index === 0) {
-        const elementIframe = element('.acp_content iframe');
-        // matchData.push({
-        //   title: element.text(),
-        //   src: elementIframe.attr("src"),
-        // });
-      }
-      console.log({ index, container: element.text() });
+  elementTitle.each((index, container) => {
+    const $$ = cheerio.load(container);
+    const title = $$('.acp_title').text();
+    let src;
+    let url;
+    if (index === 0) {
+      src = $('#acp_wrapper .acp_content iframe').attr("src");
+      url = firstUrl;
+    } else {
+      url = $$('a').attr("href");
+    }
+    matchData.push({
+      title,
+      url,
+      src,
     });
-  // });
+  });
+
   return matchData
 };
 
-const getMatchDetails = async (url, page) => {
-  await page.goto(url, { waitUnil: 'networkidle2' });
-  const pageDetailContent = await page.content();
-  const matchDetails = await extractPageDetail(pageDetailContent);
+const getNextVideo = async (page, url) => {
+  await page.goto(url, { waitUntil: 'networkidle2' });
+  const content = await page.content();
+  const $ = cheerio.load(content);
 
-  // console.log({ matchDetails });
+  return $('#acp_wrapper .acp_content iframe').attr("src");
+};
+
+const getMatchDetails = async (page, url) => {
+  console.log(`========== loading video 1  ==========`);
+  const matchDetails = await extractAllPosibleVideos(page, url);
+  console.log(`========== loaded video 1  ==========`);
+
+  for (let i = 0; i < matchDetails.length; i = i + 1) {
+    if (!matchDetails[i].src) {
+      console.log(`========== loading video ${i + 1}  ==========`);
+      matchDetails[i].src = await getNextVideo(page, matchDetails[i].url);
+      console.log(`========== loaded video ${i + 1}  ==========`);
+    }
+  }
+
+  return matchDetails;
 };
 
 const main = async () => {
   const targetUrl = 'https://highlightsfootball.com';
   const browser = await puppeteer.launch(PUPPETEER_LAUNCH_OPTIONS);
   const page = await browser.newPage();
+  await page.setRequestInterception(true);
+  page.on('request', (request) => {
+    if (['image', 'stylesheet', 'font', 'script'].indexOf(request.resourceType()) !== -1) {
+      request.abort();
+    } else {
+      request.continue();
+    }
+  });
   await page.setViewport(PUPPETEER_PAGE_VIEWPORT);
 
   const targetContent = await getPageContent(targetUrl, page);
   const matches = await extractPageContent(targetContent);
-  // await getMatchDetails(matches[0].url, page);
-  await getMatchDetails(matches[1].url, page);
-  // console.log({ matches });
 
+  for (let i = 0; i < matches.length; i = i + 1) {
+    console.log(`========== loading match ${i + 1}  ==========`);
+    matches[i].videos = await getMatchDetails(page, matches[i].url);
+    console.log(`========== loaded match ${i + 1}  ==========`);
+  }
+
+  console.log({ matches });
   await browser.close();
 }
 
