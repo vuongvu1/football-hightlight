@@ -8,7 +8,7 @@ const PUPPETEER_LAUNCH_OPTIONS = {
   // slowMo: 500
 };
 const PUPPETEER_PAGE_VIEWPORT = { width: 1366, height: 768 };
-const NUMBER_OF_PAGES = 5;
+const NUMBER_OF_PAGES = 1;
 
 const getPageContent = async (pageUrl, page) => {
   for (let i = 1; i <= NUMBER_OF_PAGES; i = i + 1) {
@@ -85,12 +85,12 @@ const getNextVideo = async (page, url) => {
 
 const getMatchDetails = async (page, url) => {
   const matchDetails = await extractAllPosibleVideos(page, url);
-  console.log(`... loaded video 1  ...`);
+  console.log(`video 1`);
 
   for (let i = 0; i < matchDetails.length; i = i + 1) {
     if (!matchDetails[i].src) {
       matchDetails[i].src = await getNextVideo(page, matchDetails[i].url);
-      console.log(`... loaded video ${i + 1}  ...`);
+      console.log(`video ${i + 1}`);
     }
   }
 
@@ -102,25 +102,28 @@ const main = async () => {
   const targetUrl = 'https://highlightsfootball.com';
   const browser = await puppeteer.launch(PUPPETEER_LAUNCH_OPTIONS);
   const page = await browser.newPage();
+  await page.setViewport(PUPPETEER_PAGE_VIEWPORT);
   await page.setRequestInterception(true);
   page.on('request', (request) => {
-    if (['image', 'stylesheet', 'font', 'script'].indexOf(request.resourceType()) !== -1) {
+    if ([
+      'image',
+      'stylesheet',
+      'font'
+    ].indexOf(request.resourceType()) !== -1) {
       request.abort();
     } else {
       request.continue();
     }
   });
-  await page.setViewport(PUPPETEER_PAGE_VIEWPORT);
 
   const targetContent = await getPageContent(targetUrl, page);
   const matches = await extractPageContent(targetContent);
 
-  // for (let i = 0; i < matches.length; i = i + 1) {
-  //   matches[i].videos = await getMatchDetails(page, matches[i].url);
-  //   console.log(`... loaded match ${i + 1}  ...`);
-  // }
+  for (let i = 0; i < matches.length; i = i + 1) {
+    matches[i].videos = await getMatchDetails(page, matches[i].url);
+    console.log(`... loaded match ${i + 1}  ...`);
+  }
 
-  console.log({ matches });
   await browser.close();
   console.timeEnd('---APP---');
 }
