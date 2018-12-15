@@ -1,4 +1,6 @@
-const firebase = require ("firebase");
+const firebase = require("firebase");
+const _ = require("lodash");
+const moment = require("moment");
 
 // Initialize Firebase
 // TODO: Replace with your project's customized code snippet
@@ -14,11 +16,20 @@ firebase.initializeApp(config);
 
 const db = firebase.database();
 
-const writeMatchData = (index, title = '', url = '', videos = [], time = '') => {
+const writeMatchData = (match) => {
+  const {
+    title = '',
+    url = '',
+    time = '',
+    videos = []
+  } = match;
+  const id = _.snakeCase(`${moment(time).valueOf()}_${moment(time).format("DD/MM/YYYY")}_${title}`);
+
   try {
-    db.ref('matches/' + index).set({ index, title, url, videos, time });
-  } catch {
-    console.log({ index, title, url, videos, time });
+    db.ref('matches/' + id).set({ title, url, videos, time });
+  } catch (err) {
+    console.log(err);
+    console.log({ title, url, videos, time });
   }
 }
 
