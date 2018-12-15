@@ -20,7 +20,7 @@ const getPageContent = async (pageUrl, page) => {
       await page.click('.td-load-more-wrap .td_ajax_load_more ');
     }
     await autoScroll(page);
-    console.log(`... loaded page ${i}  ...`);
+    console.log(`... loaded page ${i}/${NUMBER_OF_PAGES}  ...`);
   }
 
   const pageContent = await page.content();
@@ -85,12 +85,13 @@ const getNextVideo = async (page, url) => {
 
 const getMatchDetails = async (page, url) => {
   const matchDetails = await extractAllPosibleVideos(page, url);
-  console.log(`video 1`);
+  const numberOfVideos = matchDetails.length;
+  console.log(`video 1/${numberOfVideos}`);
 
-  for (let i = 0; i < matchDetails.length; i = i + 1) {
+  for (let i = 0; i < numberOfVideos; i = i + 1) {
     if (!matchDetails[i].src) {
       matchDetails[i].src = await getNextVideo(page, matchDetails[i].url);
-      console.log(`video ${i + 1}`);
+      console.log(`video ${i + 1}/${numberOfVideos}`);
     }
   }
 
@@ -118,10 +119,11 @@ const main = async () => {
 
   const targetContent = await getPageContent(targetUrl, page);
   const matches = await extractPageContent(targetContent);
+  const numberOfMatches = matches.length;
 
-  for (let i = 0; i < matches.length; i = i + 1) {
+  for (let i = 0; i < numberOfMatches; i = i + 1) {
     matches[i].videos = await getMatchDetails(page, matches[i].url);
-    console.log(`... loaded match ${i + 1}  ...`);
+    console.log(`... loaded match ${i + 1}/${numberOfMatches}  ...`);
   }
 
   await browser.close();
