@@ -8,7 +8,7 @@ const PUPPETEER_LAUNCH_OPTIONS = {
   // slowMo: 500
 };
 const PUPPETEER_PAGE_VIEWPORT = { width: 1366, height: 768 };
-const NUMBER_OF_PAGES = 1;
+const NUMBER_OF_PAGES = 2;
 
 const getPageContent = async (pageUrl, page) => {
   for (let i = 1; i <= NUMBER_OF_PAGES; i = i + 1) {
@@ -126,8 +126,10 @@ const runScraping = async () => {
     console.log(`... loaded match ${i + 1}/${numberOfMatches}  ...`);
   }
 
+  // matches[0].videos = await getMatchDetails(page, matches[0].url);
   await browser.close();
   console.timeEnd('---APP---');
+  return matches;
 }
 
 module.exports = {
