@@ -33,6 +33,20 @@ const writeMatchData = (match) => {
   }
 }
 
+const getAllMatches = () => {
+  return db.ref('/matches/').once('value').then(function(snapshot) {
+    return snapshot.val();
+  });
+};
+
+const getSingleMatch = (id) => {
+  return db.ref(`/matches/${id}`).once('value').then(function(snapshot) {
+    return snapshot.val();
+  });
+};
+
 module.exports = {
-  writeMatchData
+  writeMatchData,
+  getAllMatches,
+  getSingleMatch
 };
