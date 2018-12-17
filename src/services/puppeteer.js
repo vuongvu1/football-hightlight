@@ -1,6 +1,6 @@
 const puppeteer = require('puppeteer');
 const cheerio = require('cheerio');
-const { autoScroll } = require('./utils');
+const { autoScroll } = require('../utils');
 
 const PUPPETEER_LAUNCH_OPTIONS = {
   args: ["--lang=en-US", "--no-sandbox", "--disable-setuid-sandbox"],

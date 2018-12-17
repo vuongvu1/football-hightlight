@@ -1,8 +1,11 @@
 
-const { runScraping } = require('./puppeteer');
-const { writeMatchData, getAllMatches, getSingleMatch } = require('./firebase');
-// const _ = require("lodash");
-// const moment = require("moment");
+const schedule = require('node-schedule');
+const _ = require("lodash");
+const moment = require("moment");
+
+const { runScraping } = require('./services/puppeteer');
+const { writeMatchData, getAllMatches, getSingleMatch } = require('./services/firebase');
+
 
 // runScraping().then(data => {
 //   // console.log(data);
@@ -11,8 +14,6 @@ const { writeMatchData, getAllMatches, getSingleMatch } = require('./firebase');
 //   })
 // });
 
-// const index = _.snakeCase(`${'FC Nurnberg vs Wolfsburg Highlights'}_${moment('2018-12-14T21:45:34+00:00').format("DD-MM-YYYY")}`);
-// console.log(index);
 
 const main = async () => {
   const currentMatches = await getAllMatches();
