@@ -23,6 +23,7 @@ const writeMatchData = (match) => {
     time = '',
     videos = []
   } = match;
+  
   const id = _.snakeCase(`${moment(time).valueOf()}_${moment(time).format("DD/MM/YYYY")}_${title}`);
 
   try {

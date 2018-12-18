@@ -1,14 +1,9 @@
 const puppeteer = require('puppeteer');
 const cheerio = require('cheerio');
 const { autoScroll } = require('../utils');
-
-const PUPPETEER_LAUNCH_OPTIONS = {
-  args: ["--lang=en-US", "--no-sandbox", "--disable-setuid-sandbox"],
-  // headless: false,
-  // slowMo: 500
-};
-const PUPPETEER_PAGE_VIEWPORT = { width: 1366, height: 768 };
+const { setupPuppeteer, closePuppeteer } = require('../setup/puppeteer');
 const NUMBER_OF_PAGES = 1;
+const TARGET_URL = 'https://highlightsfootball.com';
 
 const getPageContent = async (pageUrl, page) => {
   for (let i = 1; i <= NUMBER_OF_PAGES; i = i + 1) {
@@ -98,26 +93,10 @@ const getMatchDetails = async (page, url) => {
   return matchDetails;
 };
 
-const runScraping = async () => {
-  console.time('---APP---');
-  const targetUrl = 'https://highlightsfootball.com';
-  const browser = await puppeteer.launch(PUPPETEER_LAUNCH_OPTIONS);
-  const page = await browser.newPage();
-  await page.setViewport(PUPPETEER_PAGE_VIEWPORT);
-  await page.setRequestInterception(true);
-  page.on('request', (request) => {
-    if ([
-      'image',
-      'stylesheet',
-      'font'
-    ].indexOf(request.resourceType()) !== -1) {
-      request.abort();
-    } else {
-      request.continue();
-    }
-  });
+const runScrapingAllMatches = async () => {
+  const { browser, page } = await setupPuppeteer();
 
-  const targetContent = await getPageContent(targetUrl, page);
+  const targetContent = await getPageContent(TARGET_URL, page);
   const matches = await extractPageContent(targetContent);
   const numberOfMatches = matches.length;
 
@@ -126,12 +105,21 @@ const runScraping = async () => {
     console.log(`... loaded match ${i + 1}/${numberOfMatches}  ...`);
   }
 
-  // matches[0].videos = await getMatchDetails(page, matches[0].url);
-  await browser.close();
-  console.timeEnd('---APP---');
+  await closePuppeteer(browser);
+  return matches;
+}
+
+const runScrapingAllMatchesWithoutDetails = async () => {
+  const { browser, page } = await setupPuppeteer();
+
+  const targetContent = await getPageContent(TARGET_URL, page);
+  const matches = await extractPageContent(targetContent);
+
+  await closePuppeteer(browser);
   return matches;
 }
 
 module.exports = {
-  runScraping
+  runScrapingAllMatches,
+  runScrapingAllMatchesWithoutDetails
 }
