@@ -2,8 +2,6 @@ const firebase = require("firebase");
 const _ = require("lodash");
 const moment = require("moment");
 
-// Initialize Firebase
-// TODO: Replace with your project's customized code snippet
 const config = {
   apiKey: "AIzaSyCD87Y1Q0XYGAgCeo4GvhMj8vBdr_EQkEs",
   authDomain: "collector-91b7c.firebaseapp.com",
@@ -23,7 +21,7 @@ const writeMatchData = (match) => {
     time = '',
     videos = []
   } = match;
-  
+
   const id = _.snakeCase(`${moment(time).valueOf()}_${moment(time).format("DD/MM/YYYY")}_${title}`);
 
   try {
@@ -35,7 +33,7 @@ const writeMatchData = (match) => {
 }
 
 const getAllMatches = () => {
-  return db.ref('/matches/').once('value').then(function(snapshot) {
+  return db.ref('/matches/').limitToLast(1).once('value').then(function(snapshot) {
     return snapshot.val();
   });
 };

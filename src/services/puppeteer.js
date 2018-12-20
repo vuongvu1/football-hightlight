@@ -2,6 +2,7 @@ const puppeteer = require('puppeteer');
 const cheerio = require('cheerio');
 const { autoScroll } = require('../utils');
 const { setupPuppeteer, closePuppeteer } = require('../setup/puppeteer');
+
 const NUMBER_OF_PAGES = 1;
 const TARGET_URL = 'https://highlightsfootball.com';
 
@@ -109,7 +110,7 @@ const runScrapingAllMatches = async () => {
   return matches;
 }
 
-const runScrapingAllMatchesWithoutDetails = async () => {
+const getAllAvailableMatches = async () => {
   const { browser, page } = await setupPuppeteer();
 
   const targetContent = await getPageContent(TARGET_URL, page);
@@ -121,5 +122,5 @@ const runScrapingAllMatchesWithoutDetails = async () => {
 
 module.exports = {
   runScrapingAllMatches,
-  runScrapingAllMatchesWithoutDetails
+  getAllAvailableMatches
 }

@@ -1,11 +1,11 @@
 
 const schedule = require('node-schedule');
-const _ = require("lodash");
-const moment = require("moment");
+const _ = require('lodash');
+const moment = require('moment');
 
 const {
   runScrapingAllMatches,
-  runScrapingAllMatchesWithoutDetails
+  getAllAvailableMatches
 } = require('./services/puppeteer');
 const { writeMatchData, getAllMatches, getSingleMatch } = require('./services/firebase');
 
@@ -24,13 +24,24 @@ const resetAll = async () => {
 
 
 const regularRun = async () => {
-  const newMatches = await runScrapingAllMatchesWithoutDetails();
+  let hasNewMatch = false;
+
+  const newMatches = await getAllAvailableMatches();
+  const oldMatches = Object.values(await getAllMatches())
+    .map(old => ({ title: old.title, numOfVideos: old.videos.length }));
+
   console.log(newMatches);
+
+  // newMatches.forEach((new) => {
+  //   if (oldMatches.includes(new.title)) {
+  //     console.log(new.title);
+  //   }
+  // });
 
   // const currentMatches = await getAllMatches();
   // Object.keys(currentMatches).forEach(key=> {
   //   console.log(currentMatches[key].title);
-    
+
   // });
   // const singleMatch = await getSingleMatch(Object.keys(currentMatches)[0]);
 
