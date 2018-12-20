@@ -6,7 +6,7 @@ const main = async () => {
   await regularRun();
 
   console.timeEnd('regularRun');
-  // process.exit();
+  process.exit();
 };
 
 main();

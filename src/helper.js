@@ -1,6 +1,6 @@
 
 const schedule = require('node-schedule');
-const _ = require('lodash');
+const { isMatch } = require('lodash');
 const moment = require('moment');
 
 const {
@@ -30,13 +30,13 @@ const regularRun = async () => {
   const oldMatches = Object.values(await getAllMatches())
     .map(old => ({ title: old.title, numOfVideos: old.videos.length }));
 
-  console.log(newMatches);
-
-  // newMatches.forEach((new) => {
-  //   if (oldMatches.includes(new.title)) {
-  //     console.log(new.title);
-  //   }
-  // });
+  const oldMatchesWithTitlesOnly = oldMatches.map(o => o.title);
+  for (let i = 0; i < newMatches.length; i = i + 1) {
+    const isNewMatch = !oldMatchesWithTitlesOnly.includes(newMatches[i].title);
+    if (isNewMatch) {
+      console.log(newMatches[i].title);
+    }
+  };
 
   // const currentMatches = await getAllMatches();
   // Object.keys(currentMatches).forEach(key=> {

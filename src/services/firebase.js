@@ -33,7 +33,7 @@ const writeMatchData = (match) => {
 }
 
 const getAllMatches = () => {
-  return db.ref('/matches/').limitToLast(1).once('value').then(function(snapshot) {
+  return db.ref('/matches/').limitToLast(21).once('value').then(function(snapshot) {
     return snapshot.val();
   });
 };
