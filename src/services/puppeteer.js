@@ -110,7 +110,7 @@ const runScrapingAllMatches = async () => {
   return matches;
 }
 
-const getAllAvailableMatches = async () => {
+const scrapeAllAvailableMatches = async () => {
   const { browser, page } = await setupPuppeteer();
 
   const targetContent = await getPageContent(TARGET_URL, page);
@@ -120,7 +120,19 @@ const getAllAvailableMatches = async () => {
   return matches;
 }
 
+const scrapeSingleMatch = async (match) => {
+  const { browser, page } = await setupPuppeteer();
+
+  const { url, title } = match;
+  console.log(`Getting match details for: ${title}`);
+  const matches = await getMatchDetails(page, url);
+
+  await closePuppeteer(browser);
+  return matches;
+}
+
 module.exports = {
   runScrapingAllMatches,
-  getAllAvailableMatches
+  scrapeAllAvailableMatches,
+  scrapeSingleMatch
 }

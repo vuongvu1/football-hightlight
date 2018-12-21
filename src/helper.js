@@ -5,7 +5,8 @@ const moment = require('moment');
 
 const {
   runScrapingAllMatches,
-  getAllAvailableMatches
+  scrapeAllAvailableMatches,
+  scrapeSingleMatch,
 } = require('./services/puppeteer');
 const { writeMatchData, getAllMatches, getSingleMatch } = require('./services/firebase');
 
@@ -26,7 +27,7 @@ const resetAll = async () => {
 const regularRun = async () => {
   let hasNewMatch = false;
 
-  const newMatches = await getAllAvailableMatches();
+  const newMatches = await scrapeAllAvailableMatches();
   const oldMatches = Object.values(await getAllMatches())
     .map(old => ({ title: old.title, numOfVideos: old.videos.length }));
 
@@ -34,7 +35,8 @@ const regularRun = async () => {
   for (let i = 0; i < newMatches.length; i = i + 1) {
     const isNewMatch = !oldMatchesWithTitlesOnly.includes(newMatches[i].title);
     if (isNewMatch) {
-      console.log(newMatches[i].title);
+      const newMatch = await scrapeSingleMatch(newMatches[i]);
+      writeMatchData(newMatch);
     }
   };
 
