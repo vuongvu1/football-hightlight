@@ -1,6 +1,6 @@
 const schedule = require("node-schedule");
 const { resetAll, regularRun } = require("./helper");
-const { writeLog } = require("./services/firebase");
+const { writeLog, writeError } = require("./services/firebase");
 
 const main = async () => {
   console.time("regularRun");
@@ -9,7 +9,6 @@ const main = async () => {
   await regularRun();
 
   console.timeEnd("regularRun");
-  process.exit();
 };
 
 let time = 0;
@@ -19,8 +18,8 @@ schedule.scheduleJob({ minute: [0, 10, 20, 30, 40, 50] }, function() {
     main();
     writeLog(time++);
   } catch (err) {
+    writeError(time);
     console.log("GETTING ERROR!!! ", err);
-    process.exit();
   }
 });
 

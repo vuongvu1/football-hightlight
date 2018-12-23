@@ -68,9 +68,21 @@ const writeLog = async time => {
   }
 };
 
+const writeError = async time => {
+  try {
+    await db.ref("errors/" + time).set({
+      runningTime: moment().format("LLL")
+    });
+  } catch (err) {
+    console.log(err);
+    console.log({ match });
+  }
+};
+
 module.exports = {
   writeMatchData,
   getLatestMatches,
   getSingleMatch,
-  writeLog
+  writeLog,
+  writeError
 };
