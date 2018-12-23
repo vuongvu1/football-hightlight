@@ -1,5 +1,7 @@
-module.exports = {
-  autoScroll: async (page) => {
+const { snakeCase, replace } = require('lodash');
+const moment = require('moment');
+
+const autoScroll = async (page) => {
     await page.evaluate(async () => {
         await new Promise((resolve, reject) => {
             let totalHeight = 0;
@@ -8,7 +10,7 @@ module.exports = {
                 let scrollHeight = document.body.scrollHeight;
                 window.scrollBy(0, distance);
                 totalHeight += distance;
-  
+
                 if (totalHeight >= scrollHeight) {
                     clearInterval(timer);
                     resolve();
@@ -16,5 +18,19 @@ module.exports = {
             }, 100);
         });
     });
-  },
+};
+
+const transformMatchToId = (match) => {
+    const { time, title } = match;
+    return snakeCase(`${moment(time).valueOf()}_${moment(time).format("DD-MM-YYYY")}_${title}`);
+};
+
+const transformRemoveHighlightText = (text) => {
+    return replace(text, 'Highlights', '').trim();
+};
+
+module.exports = {
+    autoScroll,
+    transformMatchToId,
+    transformRemoveHighlightText,
 }

@@ -7,8 +7,13 @@ const {
   runScrapingAllMatches,
   scrapeAllAvailableMatches,
   scrapeSingleMatch,
+  getNumberOfAvailableVideo,
 } = require('./services/puppeteer');
-const { writeMatchData, getAllMatches, getSingleMatch } = require('./services/firebase');
+const {
+  writeMatchData,
+  getLatestMatches,
+  getSingleMatch
+} = require('./services/firebase');
 
 
 const resetAll = async () => {
@@ -23,22 +28,30 @@ const resetAll = async () => {
   }
 };
 
+const createOrUpdateSingleMatch = async (match) => {
+  const newMatch = await scrapeSingleMatch(match);
+  writeMatchData(newMatch);
+};
 
 const regularRun = async () => {
   let hasNewMatch = false;
-
   const newMatches = await scrapeAllAvailableMatches();
-  const oldMatches = Object.values(await getAllMatches())
-    .map(old => ({ title: old.title, numOfVideos: old.videos.length }));
 
-  const oldMatchesWithTitlesOnly = oldMatches.map(o => o.title);
   for (let i = 0; i < newMatches.length; i = i + 1) {
-    const isNewMatch = !oldMatchesWithTitlesOnly.includes(newMatches[i].title);
-    if (isNewMatch) {
-      const newMatch = await scrapeSingleMatch(newMatches[i]);
-      writeMatchData(newMatch);
+    const savedMatch = await getSingleMatch(newMatches[i]);
+    if (!savedMatch) {
+      await createOrUpdateSingleMatch(newMatches[i]);
+    } else {
+      const newMatchAvailableVideos = await getNumberOfAvailableVideo(newMatches[i]);
+      if (newMatchAvailableVideos > savedMatch.videos.length) {
+        console.log(`Update videos for: ${savedMatch.title}`);
+        await createOrUpdateSingleMatch(newMatches[i]);
+        console.log({ savedMatch });
+      } else {
+        console.log('No need to update!');
+      }
     }
-  };
+  }
 
   // const currentMatches = await getAllMatches();
   // Object.keys(currentMatches).forEach(key=> {

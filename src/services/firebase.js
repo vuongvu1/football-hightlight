@@ -2,6 +2,8 @@ const firebase = require("firebase");
 const _ = require("lodash");
 const moment = require("moment");
 
+const { transformMatchToId, transformRemoveHighlightText } = require('../utils');
+
 const config = {
   apiKey: "AIzaSyCD87Y1Q0XYGAgCeo4GvhMj8vBdr_EQkEs",
   authDomain: "collector-91b7c.firebaseapp.com",
@@ -15,30 +17,29 @@ firebase.initializeApp(config);
 const db = firebase.database();
 
 const writeMatchData = (match) => {
-  const {
-    title = '',
-    url = '',
-    time = '',
-    videos = []
-  } = match;
-
-  const id = _.snakeCase(`${moment(time).valueOf()}_${moment(time).format("DD/MM/YYYY")}_${title}`);
+  const id = transformMatchToId(match);
 
   try {
-    db.ref('matches/' + id).set({ title, url, videos, time });
+    db.ref('matches/' + id).set({
+      ...match,
+      title: match && match.title ? transformRemoveHighlightText(match.title) : '',
+      league: match && match.league ? transformRemoveHighlightText(match.league) : '',
+    });
   } catch (err) {
     console.log(err);
-    console.log({ title, url, videos, time });
+    console.log({ match });
   }
 }
 
-const getAllMatches = () => {
-  return db.ref('/matches/').limitToLast(21).once('value').then(function(snapshot) {
+const getLatestMatches = (numberOfVideos) => {
+  return db.ref('/matches/').limitToLast(numberOfVideos).once('value').then(function(snapshot) {
     return snapshot.val();
   });
 };
 
-const getSingleMatch = (id) => {
+const getSingleMatch = (match) => {
+  const id = transformMatchToId(match);
+
   return db.ref(`/matches/${id}`).once('value').then(function(snapshot) {
     return snapshot.val();
   });
@@ -46,6 +47,6 @@ const getSingleMatch = (id) => {
 
 module.exports = {
   writeMatchData,
-  getAllMatches,
+  getLatestMatches,
   getSingleMatch
 };

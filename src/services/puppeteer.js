@@ -31,12 +31,13 @@ const extractPageContent = async (content) => {
   wrapper.each((index, container) => {
     const $$ = cheerio.load(container);
     const elementTitle = $$('.td-module-title a');
+    const league = $$('.td-post-category');
     const timeTag = $$('time');
     matchesData.push({
-      index,
       title: elementTitle.attr("title") || elementTitle.text(),
       url: elementTitle.attr("href"),
       time: timeTag.attr("datetime"),
+      league: league.text()
     });
   });
   return matchesData
@@ -122,17 +123,32 @@ const scrapeAllAvailableMatches = async () => {
 
 const scrapeSingleMatch = async (match) => {
   const { browser, page } = await setupPuppeteer();
-
   const { url, title } = match;
   console.log(`Getting match details for: ${title}`);
-  const matches = await getMatchDetails(page, url);
+  const videos = await getMatchDetails(page, url);
 
   await closePuppeteer(browser);
-  return matches;
+  return {
+    ...match,
+    videos
+  };
+}
+
+const getNumberOfAvailableVideo = async (match) => {
+  // extractAllPosibleVideos
+  const { browser, page } = await setupPuppeteer();
+
+  const { url, title } = match;
+  console.log(`Getting available videos for: ${title}`);
+  const videos = await extractAllPosibleVideos(page, url);
+
+  await closePuppeteer(browser);
+  return videos.length
 }
 
 module.exports = {
   runScrapingAllMatches,
   scrapeAllAvailableMatches,
-  scrapeSingleMatch
+  scrapeSingleMatch,
+  getNumberOfAvailableVideo
 }
