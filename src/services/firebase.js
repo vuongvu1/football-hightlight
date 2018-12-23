@@ -1,8 +1,11 @@
 const firebase = require("firebase");
-const _ = require("lodash");
+const { snakeCase } = require("lodash");
 const moment = require("moment");
 
-const { transformMatchToId, transformRemoveHighlightText } = require('../utils');
+const {
+  transformMatchToId,
+  transformRemoveHighlightText
+} = require("../utils");
 
 const config = {
   apiKey: "AIzaSyCD87Y1Q0XYGAgCeo4GvhMj8vBdr_EQkEs",
@@ -16,37 +19,58 @@ firebase.initializeApp(config);
 
 const db = firebase.database();
 
-const writeMatchData = (match) => {
+const writeMatchData = async match => {
   const id = transformMatchToId(match);
 
   try {
-    db.ref('matches/' + id).set({
+    await db.ref("matches/" + id).set({
       ...match,
-      title: match && match.title ? transformRemoveHighlightText(match.title) : '',
-      league: match && match.league ? transformRemoveHighlightText(match.league) : '',
+      title:
+        match && match.title ? transformRemoveHighlightText(match.title) : "",
+      league:
+        match && match.league ? transformRemoveHighlightText(match.league) : ""
     });
   } catch (err) {
     console.log(err);
     console.log({ match });
   }
-}
-
-const getLatestMatches = (numberOfVideos) => {
-  return db.ref('/matches/').limitToLast(numberOfVideos).once('value').then(function(snapshot) {
-    return snapshot.val();
-  });
 };
 
-const getSingleMatch = (match) => {
+const getLatestMatches = numberOfVideos => {
+  return db
+    .ref("/matches/")
+    .limitToLast(numberOfVideos)
+    .once("value")
+    .then(function(snapshot) {
+      return snapshot.val();
+    });
+};
+
+const getSingleMatch = match => {
   const id = transformMatchToId(match);
 
-  return db.ref(`/matches/${id}`).once('value').then(function(snapshot) {
-    return snapshot.val();
-  });
+  return db
+    .ref(`/matches/${id}`)
+    .once("value")
+    .then(function(snapshot) {
+      return snapshot.val();
+    });
+};
+
+const writeLog = async time => {
+  try {
+    await db.ref("logs/" + time).set({
+      runningTime: moment().format("LLL")
+    });
+  } catch (err) {
+    console.log(err);
+    console.log({ match });
+  }
 };
 
 module.exports = {
   writeMatchData,
   getLatestMatches,
-  getSingleMatch
+  getSingleMatch,
+  writeLog
 };
