@@ -39,11 +39,11 @@ const regularRun = async () => {
   for (let i = 0; i < newMatches.length; i = i + 1) {
     console.group();
     console.log("__________________");
-    console.log(`Checking videos for: ${newMatches.title}`);
+    console.log(`Checking videos for: ${newMatches[i].title}`);
 
     const savedMatch = await getSingleMatch(newMatches[i]);
     if (!savedMatch) {
-      console.log(`=====> Create videos for: ${savedMatch.title}`);
+      console.log(`=====> Create videos for: ${newMatches[i].title}`);
       await createOrUpdateSingleMatch(newMatches[i]);
     } else {
       const newMatchAvailableVideos = await getNumberOfAvailableVideo(

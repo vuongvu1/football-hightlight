@@ -22,5 +22,3 @@ schedule.scheduleJob({ minute: [0, 10, 20, 30, 40, 50] }, function() {
     console.log("GETTING ERROR!!! ", err);
   }
 });
-
-// [1, 2, 3].forEach(num => console.log(num));
