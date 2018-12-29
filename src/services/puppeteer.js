@@ -9,7 +9,7 @@ const TARGET_URL = "https://highlightsfootball.com";
 const getPageContent = async (pageUrl, page) => {
   for (let i = 1; i <= NUMBER_OF_PAGES; i = i + 1) {
     if (i === 1) {
-      await page.goto(pageUrl, { waitUntil: "networkidle2", timeout: 0 });
+      await page.goto(pageUrl, { waitUntil: "networkidle2", timeout: 60*1000 });
     } else {
       await page.waitForSelector(".td-load-more-wrap .td_ajax_load_more ");
       await page.click(".td-load-more-wrap .td_ajax_load_more ");
@@ -45,7 +45,7 @@ const extractPageContent = async content => {
 };
 
 const extractAllPosibleVideos = async (page, firstUrl) => {
-  await page.goto(firstUrl, { waitUntil: "networkidle2", timeout: 0 });
+  await page.goto(firstUrl, { waitUntil: "networkidle2", timeout: 60*1000 });
   const content = await page.content();
 
   const $ = cheerio.load(content);
@@ -74,7 +74,7 @@ const extractAllPosibleVideos = async (page, firstUrl) => {
 };
 
 const getNextVideo = async (page, url) => {
-  await page.goto(url, { waitUntil: "networkidle2", timeout: 0 });
+  await page.goto(url, { waitUntil: "networkidle2", timeout: 60*1000 });
   const content = await page.content();
   const $ = cheerio.load(content);
 

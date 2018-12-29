@@ -36,7 +36,7 @@ const regularRun = async () => {
   let hasNewMatch = false;
   const newMatches = await scrapeAllAvailableMatches();
 
-  for (let i = 0; i < newMatches.length; i = i + 1) {
+  for (let i = 0; i < 10; i = i + 1) {
     console.group();
     console.log("__________________");
     console.log(`Checking videos for: ${newMatches[i].title}`);
