@@ -5,7 +5,7 @@
   "main": "index.js",
   "scripts": {
     "babel": "babel --presets es2015 src/ -o build/main.bundle.js",
-    "start": "node src/"
+    "start": "node app"
   },
   "repository": {
     "type": "git",
