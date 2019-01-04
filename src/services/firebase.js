@@ -22,6 +22,11 @@ const db = firebase.database();
 const writeMatchData = async match => {
   const id = transformMatchToId(match);
 
+  if (!match || !match.videos || match.videos.length < 1) {
+    console.log("NOT A MATCH!!");
+    return;
+  }
+
   try {
     await db.ref("matches/" + id).set({
       ...match,

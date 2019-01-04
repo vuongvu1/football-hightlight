@@ -2,7 +2,7 @@ const puppeteer = require('puppeteer');
 
 const PUPPETEER_LAUNCH_OPTIONS = {
     args: ["--lang=en-US", "--no-sandbox", "--disable-setuid-sandbox"],
-    // headless: false,
+    headless: true,
     // slowMo: 500
   };
 const PUPPETEER_PAGE_VIEWPORT = { width: 1366, height: 768 };
