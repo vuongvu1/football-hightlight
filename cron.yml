@@ -1,0 +1,4 @@
+cron:
+- description: 'regularRun new matches every 10 mins'
+  url: '/regularRun'
+  schedule: every 10 mins

@@ -26,7 +26,7 @@ const transformMatchToId = (match) => {
 };
 
 const transformCurrentTimeToId = () => (
-    snakeCase(`${moment(time).valueOf()}_${moment(time).format("DD-MM-YYYY")}`)
+    snakeCase(`${moment().valueOf()}_${moment().format("DD-MM-YYYY")}`)
 );
 
 const transformRemoveHighlightText = (text) => {

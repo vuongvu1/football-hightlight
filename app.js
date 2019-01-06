@@ -19,7 +19,13 @@ const main = async () => {
 
 app.get('/regularRun', async (req, res) => {
   res.send('running Regular');
-  main();
+  try {
+    main();
+    writeLog();
+  } catch (err) {
+    writeError();
+    console.log("GETTING ERROR!!! ", err);
+  }
 });
 
 // app.get('/cancel', async (req, res) => {
@@ -41,13 +47,13 @@ const server = app.listen(process.env.PORT || 8080, err => {
   console.info(`App listening on port ${port}`);
 });
 
-console.log('START SCHEDULE JOB!!!');
-schedule.scheduleJob('regularJob', { minute: [0, 10, 20, 30, 40, 50] }, function() {
-  try {
-    main();
-    writeLog();
-  } catch (err) {
-    writeError();
-    console.log("GETTING ERROR!!! ", err);
-  }
-});
+// console.log('START SCHEDULE JOB!!!');
+// schedule.scheduleJob('regularJob', { minute: [0, 10, 20, 30, 40, 50] }, function() {
+//   try {
+//     main();
+//     writeLog();
+//   } catch (err) {
+//     writeError();
+//     console.log("GETTING ERROR!!! ", err);
+//   }
+// });
