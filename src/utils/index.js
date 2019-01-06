@@ -25,6 +25,10 @@ const transformMatchToId = (match) => {
     return snakeCase(`${moment(time).valueOf()}_${moment(time).format("DD-MM-YYYY")}_${title}`);
 };
 
+const transformCurrentTimeToId = () => (
+    snakeCase(`${moment(time).valueOf()}_${moment(time).format("DD-MM-YYYY")}`)
+);
+
 const transformRemoveHighlightText = (text) => {
     return replace(text, 'Highlights', '').trim();
 };
@@ -33,4 +37,5 @@ module.exports = {
     autoScroll,
     transformMatchToId,
     transformRemoveHighlightText,
+    transformCurrentTimeToId,
 }

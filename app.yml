@@ -1,2 +1,4 @@
 runtime: nodejs8
 instance_class: F4_1G
+# manual_scaling:
+#   instances: 5

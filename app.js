@@ -41,14 +41,13 @@ const server = app.listen(process.env.PORT || 8080, err => {
   console.info(`App listening on port ${port}`);
 });
 
-let time = 0;
 console.log('START SCHEDULE JOB!!!');
 schedule.scheduleJob('regularJob', { minute: [0, 10, 20, 30, 40, 50] }, function() {
   try {
     main();
-    writeLog(time++);
+    writeLog();
   } catch (err) {
-    writeError(time);
+    writeError();
     console.log("GETTING ERROR!!! ", err);
   }
 });

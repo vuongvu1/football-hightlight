@@ -2,6 +2,8 @@ const firebase = require("firebase");
 const { snakeCase } = require("lodash");
 const moment = require("moment");
 
+const { transformCurrentTimeToId } = require('../utils');
+
 const {
   transformMatchToId,
   transformRemoveHighlightText
@@ -62,10 +64,11 @@ const getSingleMatch = match => {
     });
 };
 
-const writeLog = async time => {
+const writeLog = async () => {
+  const time = transformCurrentTimeToId();
   try {
     await db.ref("logs/" + time).set({
-      runningTime: moment().format("LLL")
+      runningTime: moment().format("LLL Z")
     });
   } catch (err) {
     console.log(err);
@@ -73,10 +76,11 @@ const writeLog = async time => {
   }
 };
 
-const writeError = async time => {
+const writeError = async () => {
+  const time = transformCurrentTimeToId();
   try {
     await db.ref("errors/" + time).set({
-      runningTime: moment().format("LLL")
+      runningTime: moment().format("LLL Z")
     });
   } catch (err) {
     console.log(err);
