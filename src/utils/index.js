@@ -22,11 +22,11 @@ const autoScroll = async (page) => {
 
 const transformMatchToId = (match) => {
     const { time, title } = match;
-    return snakeCase(`${moment(time).valueOf()}__${moment(time).format("DD-MM-YYYY")}__${title}`);
+    return snakeCase(`${moment(time).valueOf()}__${moment(time).format("dddd_DD_MM_YYYY")}__${title}`);
 };
 
 const transformCurrentTimeToId = () => (
-    snakeCase(`${moment().valueOf()}__${moment().format("DD-MM-YYYY")}`)
+    snakeCase(`${moment().valueOf()}__${moment().format("dddd_DD_MM_YYYY")}`)
 );
 
 const transformRemoveHighlightText = (text) => {

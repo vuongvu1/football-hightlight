@@ -68,7 +68,7 @@ const writeLog = async () => {
   const time = transformCurrentTimeToId();
   try {
     await db.ref("logs/" + time).set({
-      runningTime: moment().format("LLL Z")
+      runningTime: moment().format("LLLL Z")
     });
   } catch (err) {
     console.log(err);
@@ -80,7 +80,7 @@ const writeError = async () => {
   const time = transformCurrentTimeToId();
   try {
     await db.ref("errors/" + time).set({
-      runningTime: moment().format("LLL Z")
+      runningTime: moment().format("LLLL Z")
     });
   } catch (err) {
     console.log(err);

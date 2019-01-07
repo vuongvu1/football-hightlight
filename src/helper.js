@@ -31,7 +31,7 @@ const createOrUpdateSingleMatch = async match => {
 
 const regularRun = async () => {
   console.group();
-  console.log(`Regular run on: ${moment().format("LLL")}`);
+  console.log(`Regular run on: ${moment().format("LLLL Z")}`);
 
   let hasNewMatch = false;
   const newMatches = await scrapeAllAvailableMatches();
