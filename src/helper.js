@@ -8,9 +8,28 @@ const {
 } = require("./services/puppeteer");
 const {
   writeMatchData,
-  getLatestMatches,
-  getSingleMatch
+  getSingleMatch,
+  getAllNumberOfMatch,
+  removeOldMatches,
+  getAllNumberOfLogs,
+  removeOldLogs,
 } = require("./services/firebase");
+
+const checkRemoveOldMatches = async () => {
+  const all = await getAllNumberOfMatch();
+  if (all > 40) {
+    const left = all - 40;
+    removeOldMatches(left)
+  }
+};
+
+const checkRemoveOldLogs = async () => {
+  const all = await getAllNumberOfLogs();
+  if (all > 72) {
+    const left = all - 72;
+    removeOldLogs(left)
+  }
+};
 
 const resetAll = async () => {
   try {
@@ -18,6 +37,8 @@ const resetAll = async () => {
     for (let i = 0; i < allMatches.length; i = i + 1) {
       await writeMatchData(allMatches[i]);
     }
+    await checkRemoveOldMatches();
+    await checkRemoveOldLogs();
   } catch (err) {
     console.error("rerunScrappingAllMatches");
     console.log(err);
@@ -66,5 +87,7 @@ const regularRun = async () => {
 
 module.exports = {
   regularRun,
-  resetAll
+  resetAll,
+  checkRemoveOldMatches,
+  checkRemoveOldLogs,
 };

@@ -1,7 +1,7 @@
 cron:
-- description: 'regularRun new matches every 10 mins'
+- description: 'regularRun new matches every 1 hour'
   url: '/regularRun'
-  schedule: every 10 mins
+  schedule: every 1 hours
 - description: 'resetAll new matches every day'
   url: '/resetAll'
   schedule: every 24 hours

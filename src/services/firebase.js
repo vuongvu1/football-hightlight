@@ -43,33 +43,69 @@ const writeMatchData = async match => {
   }
 };
 
-const getLatestMatches = numberOfVideos => {
+const getAllNumberOfMatch = () => {
   return db
-    .ref("/matches/")
-    .limitToLast(numberOfVideos)
+    .ref("matches/")
     .once("value")
     .then(function(snapshot) {
-      return snapshot.val();
+      return Object.keys(snapshot.val()).length;
     });
+};
+
+const removeOldMatches = async (numberOfVideos) => {
+  const keysToDelete = await db
+    .ref("matches/")
+    .limitToFirst(numberOfVideos)
+    .once('value')
+    .then(function(snapshot) {
+      return Object.keys(snapshot.val());
+    });
+  return keysToDelete.forEach(key => {
+    db
+    .ref(`matches/${key}`)
+    .remove();
+  });
 };
 
 const getSingleMatch = match => {
   const id = transformMatchToId(match);
 
   return db
-    .ref(`/matches/${id}`)
+    .ref(`matches/${id}`)
     .once("value")
     .then(function(snapshot) {
       return snapshot.val();
     });
 };
 
+const getAllNumberOfLogs = () => {
+  return db
+    .ref("logs/")
+    .once("value")
+    .then(function(snapshot) {
+      return Object.keys(snapshot.val()).length;
+    });
+};
+
+const removeOldLogs = async (numberOfLogs) => {
+  const keysToDelete = await db
+    .ref("logs/")
+    .limitToFirst(numberOfLogs)
+    .once('value')
+    .then(function(snapshot) {
+      return Object.keys(snapshot.val());
+    });
+  return keysToDelete.forEach(key => {
+    db
+    .ref(`logs/${key}`)
+    .remove();
+  });
+};
+
 const writeLog = async () => {
   const time = transformCurrentTimeToId();
   try {
-    await db.ref("logs/" + time).set({
-      runningTime: moment().format("LLLL Z")
-    });
+    await db.ref("logs/" + time).set(moment().format("LLLL Z"));
   } catch (err) {
     console.log(err);
     console.log({ match });
@@ -90,8 +126,11 @@ const writeError = async () => {
 
 module.exports = {
   writeMatchData,
-  getLatestMatches,
   getSingleMatch,
   writeLog,
-  writeError
+  writeError,
+  getAllNumberOfMatch,
+  removeOldMatches,
+  getAllNumberOfLogs,
+  removeOldLogs,
 };
