@@ -10,12 +10,12 @@ const {
 } = require("../utils");
 
 const config = {
-  apiKey: "AIzaSyCD87Y1Q0XYGAgCeo4GvhMj8vBdr_EQkEs",
-  authDomain: "collector-91b7c.firebaseapp.com",
-  databaseURL: "https://collector-91b7c.firebaseio.com",
-  projectId: "collector-91b7c",
-  storageBucket: "collector-91b7c.appspot.com",
-  messagingSenderId: "289258932231"
+  apiKey: process.env.API_KEY,
+  authDomain: process.env.AUTH_DOMAIN,
+  databaseURL: process.env.DATABASE_URL,
+  projectId: process.env.PROJECT_ID,
+  storageBucket: process.env.STORAGE_BUCKET,
+  messagingSenderId: process.env.MESSAGING_SENDER_ID,
 };
 firebase.initializeApp(config);
 
